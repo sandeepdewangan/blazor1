@@ -1,5 +1,5 @@
-﻿<p>
-    @server.Name is in @server.City is @server.IsOnline
+﻿<p style="color:@(server.IsOnline?"green":"red")">
+    @server.Name is in @server.City is @(server.IsOnline?"Online":"Offline")
 </p>
 
 @code {
