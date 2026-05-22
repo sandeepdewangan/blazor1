@@ -24,7 +24,11 @@
             }
         }
 
-        public static List<TodoItem> GetItems() => items;
+        public static List<TodoItem> GetItems()
+        {
+            var sorted = items.OrderBy(s => s.IsCompleted).ThenByDescending(i => i.Id).ToList();
+            return sorted;
+        }
 
         public static TodoItem? GetItemById(int Id)
         {

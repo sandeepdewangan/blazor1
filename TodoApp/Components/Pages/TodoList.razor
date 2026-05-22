@@ -1,7 +1,50 @@
 ﻿@page "/todolist"
+@rendermode InteractiveServer
 
 <h3>Todo</h3>
 
-@code {
+<button class="btn btn-outline-success" @onclick="AddTask">Add Task</button>
 
+<br />
+<br />
+
+@* @bind-value -> will trigger onchange event and will update the state. *@
+
+@if(items !=null && items.Count > 0)
+{
+    <ul>
+        @foreach(var item in items)
+        {
+            <li @key="item.Id" class="m-1 list-unstyled">
+                <div class="row">
+                    <div class="col-1">
+                        <input type="checkbox" @bind-value="@item.IsCompleted" checked="@item.IsCompleted" />
+                    </div>
+                    <div class="col-3">
+                        <input @bind-value="@item.Name" class="@(item.IsCompleted ? "text-decoration-line-through text-muted border-0" : "border-0")" disabled="@item.IsCompleted" />
+                    </div>
+                    <div class="col-3">
+                        @if (item.IsCompleted)
+                        {
+                            <text>📆 @item.DateCompleted.ToLongDateString()</text>
+                        }
+                    </div>
+                </div>
+            </li>
+        }
+    </ul>
+}
+
+
+@code {
+    // Views, Events, States
+
+    // States
+    private List<TodoItem> items = TodoItemsRepo.GetItems();
+
+    private void AddTask()
+    {
+        TodoItemsRepo.AddItem(new TodoItem {Name="New Task"});
+        items = TodoItemsRepo.GetItems();
+    }
 }
