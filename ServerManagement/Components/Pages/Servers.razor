@@ -8,6 +8,8 @@
     <button class="btn btn-info m-1">@city</button>
 }
 
+<hr />
+
 <ul>
     @foreach(var server in servers)
     {
@@ -16,6 +18,7 @@
             <span style="color:@((server.IsOnline?"green":"red"))">
                    @(server.IsOnline ? "online" : "offline")
             </span>
+            <a href="/servers/@server.ServerId" class="text-decoration-none">Edit</a>
         </li>
     }
 </ul>
