@@ -46,9 +46,9 @@
             return null;
         }
 
-        public void UpdateServer(int serverId, Server server)
+        public static void UpdateServer(int serverId, Server server)
         {
-            if (serverId == server.ServerId) return;
+            if (serverId != server.ServerId) return;
             var serverToUpdate = servers.FirstOrDefault(s => s.ServerId == serverId);
             if (serverToUpdate != null)
             {
@@ -58,7 +58,7 @@
             }
         }
 
-        public void DeleteServer(int serverId)
+        public static void DeleteServer(int serverId)
         {
             var server = servers.FirstOrDefault(s => s.ServerId == serverId);
             if (server != null)

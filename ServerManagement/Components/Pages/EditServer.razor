@@ -4,9 +4,28 @@
 
 @if(server != null)
 {
-    <p> ☑️ @server.Name </p>
-    <p> ☑️ @server.City </p>
-    <p> ☑️ @(server.IsOnline?"Online":"Offline") </p>
+    <EditForm Model="server" FormName="formServer" OnValidSubmit="Submit">
+        
+        @* Allows to validate model based field validations *@
+        <DataAnnotationsValidator />
+
+        @* Disply validation summary *@
+        <ValidationSummary />
+
+        <InputNumber @bind-Value="server.ServerId"hidden></InputNumber>
+        
+        <InputText @bind-Value="server.Name"></InputText> 
+        <ValidationMessage For="()=>server.Name" />
+
+        <InputText @bind-Value="server.City"></InputText>
+        <ValidationMessage For="() => server.City" />
+
+        <InputCheckbox @bind-Value="server.IsOnline"></InputCheckbox>
+
+        <button class="btn btn-primary m-1" type="submit">Update</button>
+
+        <a href="/servers" class="text-decoration-none">Close</a>
+    </EditForm>
 }
 
 @code {
@@ -14,12 +33,23 @@
     [Parameter]
     public int Id { get; set; }
 
-    private Server? server;
+    [SupplyParameterFromForm(FormName = "formServer")]
+    private Server? server { get; set; }
 
     // lifecycle method
     protected override void OnParametersSet()
     {
-        server = ServerRepo.GetServerById(this.Id);
+        // if server is null or first time loaded, then only run this fetch.
+        server = server ?? ServerRepo.GetServerById(this.Id);
+    }
+
+    private void Submit()
+    {
+        // update server
+        if(server != null)
+        {
+            ServerRepo.UpdateServer(server.ServerId, server);
+        }
     }
 
 }
