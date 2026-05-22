@@ -23,6 +23,8 @@
     }
 </ul>
 
+<a href="/servers/add" class="btn btn-outline-info">Add Server</a>
+
 @code {
     private List<Server> servers = ServerRepo.GetServersByCity("raipur");
     private List<string> cities = CityRepo.GetCities();

@@ -1,0 +1,41 @@
+﻿@page "/servers/add"
+
+@inject NavigationManager NavManager
+
+<h3>Add Server</h3>
+
+
+<EditForm Model="server" FormName="formServer" OnValidSubmit="Submit">
+        
+    @* Allows to validate model based field validations *@
+    <DataAnnotationsValidator />
+        
+    <InputText @bind-Value="server.Name"></InputText>
+    <ValidationMessage For="() => server.Name" />
+
+    <InputText @bind-Value="server.City"></InputText>
+    <ValidationMessage For="() => server.City" />
+
+    <InputCheckbox @bind-Value="server.IsOnline"></InputCheckbox>
+
+    <button class="btn btn-primary m-1" type="submit">Save</button>
+
+    <a href="/servers" class="text-decoration-none">Close</a>
+</EditForm>
+
+
+@code {
+
+    [SupplyParameterFromForm(FormName = "formServer")]
+    private Server server { get; set; } = new Server() { IsOnline = false };
+
+    private void Submit()
+    {
+        // update server
+        if (server != null)
+        {
+            ServerRepo.AddServer(server);
+            NavManager.NavigateTo("/servers");
+        }
+    }
+}
