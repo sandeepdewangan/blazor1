@@ -1,13 +1,16 @@
 ﻿@page "/servers"
+@rendermode InteractiveServer
 @inject NavigationManager NavManager
+
 
 <h3><img src="@($"/images/server.png")" height="50" /> Servers</h3>
 <hr />
 
 @foreach (var city in cities)
 {
-    <button class="btn btn-info m-1">@city</button>
+    <button class="btn btn-info m-1" @onclick="@(()=>{SelectCity(city);})">@city</button>
 }
+<h4>@selectedCity</h4>
 
 <hr />
 
@@ -39,8 +42,13 @@
 <a href="/servers/add" class="btn btn-outline-info">Add Server</a>
 
 @code {
+    // States
+    // After rendering, it doesnot re-render like it happens on Static SSR.
+    // It remembers it states.
+    // Initialization happen onces.
     private List<Server> servers = ServerRepo.GetServersByCity("raipur");
     private List<string> cities = CityRepo.GetCities();
+    private string selectedCity = "Raipur";
 
     private void OnDeleteServer(int serverId)
     {
@@ -49,5 +57,11 @@
             ServerRepo.DeleteServer(serverId);
             NavManager.Refresh();
         }
+    }
+
+    private void SelectCity(string city)
+    {
+        this.selectedCity = city;
+        this.servers = ServerRepo.GetServersByCity(this.selectedCity);
     }
 }
