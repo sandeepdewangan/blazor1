@@ -22,6 +22,13 @@
 <ServerInteractionWidget @rendermode="InteractiveServer" />
 
 <hr/>
+
+<div>
+    <input type="text" placeholder="Search Server" @onchange="HandleServerSearchFilterChange" />
+    <button type="button" @onclick="HandleSearch">Search</button>
+</div>
+
+<hr/>
 <ul>
     @foreach (var server in servers)
     {
@@ -49,6 +56,7 @@
     private List<Server> servers = ServerRepo.GetServersByCity("raipur");
     private List<string> cities = CityRepo.GetCities();
     private string selectedCity = "Raipur";
+    private string searchFilter = "";
 
     private void OnDeleteServer(int serverId)
     {
@@ -63,5 +71,16 @@
     {
         this.selectedCity = city;
         this.servers = ServerRepo.GetServersByCity(this.selectedCity);
+    }
+
+    private void HandleServerSearchFilterChange(ChangeEventArgs args)
+    {
+        this.searchFilter = args.Value?.ToString() ?? string.Empty;
+    }
+
+    private void HandleSearch()
+    {
+        this.servers = ServerRepo.SearchServers(this.searchFilter);
+        this.selectedCity = string.Empty;
     }
 }
