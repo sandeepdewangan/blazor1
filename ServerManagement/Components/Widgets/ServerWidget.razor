@@ -1,7 +1,41 @@
-﻿<p style="color:@(server.IsOnline?"green":"red")">
-    @server.Name is in @server.City is @(server.IsOnline?"Online":"Offline")
-</p>
+﻿@* Without Enhance=true *@
+@* Whenever user clicks on change server status, the page get reloaded and updated status shows. *@
+@* The whole page reloaded *@
+
+@* With Enhance=true *@
+@* The page gets never loaded and only those DOM are replaced which are modified. *@
+
+@if(server != null)
+{
+    <EditForm Enhance="true" Model="server" FormName="serverComp" OnSubmit="ChangeServerStatus">
+        <InputNumber @bind-Value="server.ServerId" hidden />
+        <InputText @bind-Value="server.Name" hidden />
+        <InputText @bind-Value="server.City" hidden />
+        <InputCheckbox @bind-Value="server.IsOnline" hidden />
+
+        <div style="color:@(server.IsOnline ? "green" : "red")">
+            @server.Name is in @server.City is @(server.IsOnline ? "Online" : "Offline")
+            <button class="btn btn-primary">Turn on/off</button>
+        </div>
+    </EditForm>
+}
+
+
 
 @code {
-    private Server server = new Server { Name = "NIC", City = "Raipur" };
+    [SupplyParameterFromForm]
+    private Server? server { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        server = server ?? new Server { Name = "NIC Raipur", City = "Raipur" };
+    }
+
+    private void ChangeServerStatus()
+    {
+        if (server != null)
+        {
+            server.IsOnline = !server.IsOnline;
+        }
+    }
 }
