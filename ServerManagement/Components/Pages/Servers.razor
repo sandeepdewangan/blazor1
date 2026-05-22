@@ -8,7 +8,7 @@
 
 @foreach (var city in cities)
 {
-    <button class="btn btn-info m-1" @onclick="@(()=>{SelectCity(city);})">@city</button>
+    <button class="btn btn-info m-1 @(selectedCity.Equals(city) ? "btn-light": "")" @onclick="@(() => { SelectCity(city); })">@city</button>
 }
 <h4>@selectedCity</h4>
 
