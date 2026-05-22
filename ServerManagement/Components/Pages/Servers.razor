@@ -1,9 +1,10 @@
 ﻿@page "/servers"
+@inject NavigationManager NavManager
 
 <h3><img src="@($"/images/server.png")" height="50" /> Servers</h3>
-<hr/>
+<hr />
 
-@foreach(var city in cities)
+@foreach (var city in cities)
 {
     <button class="btn btn-info m-1">@city</button>
 }
@@ -11,14 +12,18 @@
 <hr />
 
 <ul>
-    @foreach(var server in servers)
+    @foreach (var server in servers)
     {
         <li>
-            @server.Name in @server.City is 
-            <span style="color:@((server.IsOnline?"green":"red"))">
-                   @(server.IsOnline ? "online" : "offline")
+            @server.Name in @server.City is
+            <span style="color:@((server.IsOnline ? "green" : "red"))">
+                @(server.IsOnline ? "online" : "offline")
             </span>
             <a href="/servers/@server.ServerId" class="text-decoration-none">Edit</a>
+
+            <EditForm Model="server" FormName="@($"formServer-{server.ServerId}")" OnValidSubmit="@(() => { OnDeleteServer(server.ServerId);})">
+                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+            </EditForm>
         </li>
     }
 </ul>
@@ -28,4 +33,13 @@
 @code {
     private List<Server> servers = ServerRepo.GetServersByCity("raipur");
     private List<string> cities = CityRepo.GetCities();
+
+    private void OnDeleteServer(int serverId)
+    {
+        if (serverId > 0)
+        {
+            ServerRepo.DeleteServer(serverId);
+            NavManager.Refresh();
+        }
+    }
 }
