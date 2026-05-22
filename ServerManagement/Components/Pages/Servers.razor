@@ -3,6 +3,11 @@
 <h3>Servers</h3>
 <hr/>
 
+@foreach(var city in cities)
+{
+    <button class="btn btn-info m-1">@city</button>
+}
+
 <ul>
     @foreach(var server in servers)
     {
@@ -17,4 +22,5 @@
 
 @code {
     private List<Server> servers = ServerRepo.GetServersByCity("raipur");
+    private List<string> cities = CityRepo.GetCities();
 }
