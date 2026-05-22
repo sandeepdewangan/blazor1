@@ -42,8 +42,32 @@
 </div>
 
 <hr />
+@* 
+    Virtualization is used to improve the performance of Lists.
+    When to use virtualization:
+    1. Too many items are there to render.
+    2. Items height should be same (pixel wise).
+
+    when we scroll, automatically data loaded.
+*@
+
 <ul>
-    @foreach (var server in servers)
+    
+    <Virtualize Items="this.servers" Context="server">
+        <li @key="server.ServerId">
+            @server.Name in @server.City is
+            <span style="color:@((server.IsOnline ? "green" : "red"))">
+                @(server.IsOnline ? "online" : "offline")
+            </span>
+            <a href="/servers/@server.ServerId" class="text-decoration-none">Edit</a>
+
+            <EditForm Model="server" FormName="@($"formServer-{server.ServerId}")" OnValidSubmit="@(() => { OnDeleteServer(server.ServerId); })">
+                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+            </EditForm>
+        </li>
+    </Virtualize>
+
+    @* @foreach (var server in servers)
     {
         <li @key="server.ServerId">
             @server.Name in @server.City is
@@ -56,7 +80,7 @@
                 <button type="submit" class="btn btn-sm btn-danger">Delete</button>
             </EditForm>
         </li>
-    }
+    } *@
 </ul>
 
 <a href="/servers/add" class="btn btn-outline-info">Add Server</a>
