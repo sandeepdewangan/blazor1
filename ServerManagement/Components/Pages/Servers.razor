@@ -8,7 +8,7 @@
 
 @foreach (var city in cities)
 {
-    <button class="btn btn-info m-1 @(selectedCity.Equals(city) ? "btn-light": "")" @onclick="@(() => { SelectCity(city); })">@city</button>
+    <button class="btn btn-info m-1 @(selectedCity.Equals(city) ? "btn-light" : "")" @onclick="@(() => { SelectCity(city); })">@city</button>
 }
 <h4>@selectedCity</h4>
 
@@ -21,14 +21,27 @@
 @* Best Options for Server Interactivity *@
 <ServerInteractionWidget @rendermode="InteractiveServer" />
 
-<hr/>
+<hr />
 
+@* One Way Binding *@
 <div>
     <input type="text" placeholder="Search Server" @onchange="HandleServerSearchFilterChange" />
     <button type="button" @onclick="HandleSearch">Search</button>
 </div>
 
-<hr/>
+@* Two Way Data Binding (default onChangeEvent) *@
+<div>
+    <input type="text" placeholder="Search Server" @bind-value="searchFilter" />
+    <button type="button" @onclick="HandleSearch">Search</button>
+</div>
+
+@* Two Way Data Binding (onInputEvent) without HandleSearch and with Getter and Setter *@
+<div>
+    <input type="text" placeholder="Search Server" @bind-value="searchFilter" @bind-value:event="oninput" />
+    <button type="button">Search</button>
+</div>
+
+<hr />
 <ul>
     @foreach (var server in servers)
     {
@@ -39,7 +52,7 @@
             </span>
             <a href="/servers/@server.ServerId" class="text-decoration-none">Edit</a>
 
-            <EditForm Model="server" FormName="@($"formServer-{server.ServerId}")" OnValidSubmit="@(() => { OnDeleteServer(server.ServerId);})">
+            <EditForm Model="server" FormName="@($"formServer-{server.ServerId}")" OnValidSubmit="@(() => { OnDeleteServer(server.ServerId); })">
                 <button type="submit" class="btn btn-sm btn-danger">Delete</button>
             </EditForm>
         </li>
@@ -56,7 +69,16 @@
     private List<Server> servers = ServerRepo.GetServersByCity("raipur");
     private List<string> cities = CityRepo.GetCities();
     private string selectedCity = "Raipur";
-    private string searchFilter = "";
+    private string _searchFilter = "";
+    private string searchFilter
+    {
+        get => _searchFilter; 
+        set
+            {
+                _searchFilter = value;
+                this.servers = ServerRepo.SearchServers(_searchFilter);
+            }
+    }
 
     private void OnDeleteServer(int serverId)
     {
@@ -69,6 +91,7 @@
 
     private void SelectCity(string city)
     {
+        this.searchFilter = string.Empty;
         this.selectedCity = city;
         this.servers = ServerRepo.GetServersByCity(this.selectedCity);
     }
