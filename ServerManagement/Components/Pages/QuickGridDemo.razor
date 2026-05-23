@@ -1,0 +1,81 @@
+﻿@page "/quickgrid"
+@inject NavigationManager NavManager
+@using Microsoft.AspNetCore.Components.QuickGrid
+@rendermode InteractiveServer
+
+<h3>QuickGrid Demo</h3>
+
+<br />
+
+@if (servers != null)
+{
+    <QuickGrid @ref="quickGrid" Items="filteredServers.AsQueryable()" Pagination="paginationState">
+        <PropertyColumn Property="s => s.Name"></PropertyColumn>
+        <PropertyColumn Property="s => s.City" Sortable="true">
+            <ColumnOptions>
+                <input type="search" @bind="cityFilter" @bind:after="ApplyCityFilter" placeholder="Filter by city"/>
+            </ColumnOptions>
+        </PropertyColumn>
+        <TemplateColumn Title="Status" Sortable="true" SortBy="GridSort<Server>.ByAscending(s=>s.IsOnline)">
+            @if (context.IsOnline)
+            {
+                <div style="color:green">
+                    Online
+                </div>
+            }
+            else
+            {
+                <div style="color:red">
+                    Offline
+                </div>
+            }
+        </TemplateColumn>
+        <TemplateColumn>
+            <a href="/servers/@context.ServerId" class="text-decoration-none">Edit</a>
+        </TemplateColumn>
+        <TemplateColumn>
+           <ChildContent Context="server">
+                <EditForm Model="server" FormName="@($"formServer-{server.ServerId}")" OnValidSubmit="@(() => { OnDeleteServer(server.ServerId); })">
+                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                </EditForm>
+           </ChildContent>
+        </TemplateColumn>
+    </QuickGrid>
+    <Paginator State="paginationState" />
+}
+
+@code {
+    private string cityFilter = "";
+    private List<Server>? servers = ServerRepo.GetServers();
+    private QuickGrid<Server>? quickGrid;
+    private List<Server>? filteredServers;
+    private PaginationState paginationState = new PaginationState { ItemsPerPage = 5 };
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        filteredServers = servers;
+    }
+
+    private void OnDeleteServer(int serverId)
+    {
+        if (serverId > 0)
+        {
+            ServerRepo.DeleteServer(serverId);
+            NavManager.NavigateTo("/quickgrid", true);
+        }
+    }
+    private void ApplyCityFilter()
+    {
+        if (string.IsNullOrWhiteSpace(cityFilter))
+        {
+            filteredServers = servers;
+        }
+        else
+        {
+            filteredServers = servers?.Where(s => s.City.Contains(cityFilter, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+        
+        quickGrid?.HideColumnOptionsAsync();
+    }
+}

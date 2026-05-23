@@ -124,3 +124,48 @@ A[View] ---> B[Events]
 B ---> C[State]
 C ---> A
 ```
+
+
+
+## Quick Grid
+
+QuickGrid is a lightweight, fast data grid component for Blazor provided by Microsoft.
+
+Install: Microsoft.AspNetCore.Components.QuickGrid
+
+Features:
+
+* Sorting
+* Pagination
+* Virtualization
+* Template columns
+* Fast rendering
+* Works well with EF Core
+  
+  
+
+## Non-Routable Component  Deep Dive
+
+1. Extracting all the sharable components into the `widgets/mywidget.razor`.
+
+2. Communicate from parent to child components.
+
+3. EventCallback to pass info from child to parent components.
+
+4. Reference a child component.
+
+5. StateHasChanged to Re-render a Component.
+
+6. Reuse routable component as non-routable component.
+
+7. CSS Isolation.
+
+8. Cascading parameter to pass values down the component tree.
+
+9. Cascading Parameter crossing render mode boundary.
+
+10. Use templated components to create generic components.
+
+11. QuickGrid to display our servers in the table with Pagination, Filter and Sort.
+
+12. Arbitrary attributes to provide flexibility.

@@ -1,0 +1,32 @@
+﻿@inject NavigationManager NavManager
+
+@if (servers != null && this.servers.Count > 0)
+{
+    <ul>
+        <Virtualize Items="this.servers" Context="server">
+            <ServerWidget Server="server" />
+        </Virtualize>
+    </ul>
+}
+
+@code {
+    [Parameter]
+    public string? CityName { get; set; }
+
+    [Parameter]
+    public string SearchFilter { get; set; } = "";
+
+    private List<Server>? servers;
+
+    protected override void OnParametersSet()
+    {
+        if (string.IsNullOrWhiteSpace(this.SearchFilter))
+        {   
+            servers = ServerRepo.GetServersByCity(CityName ?? "Raipur");
+        }
+        else
+        {
+            servers = ServerRepo.SearchServers(this.SearchFilter);
+        }
+    }
+}

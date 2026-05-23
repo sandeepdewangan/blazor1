@@ -6,128 +6,44 @@
 <h3><img src="@($"/images/server.png")" height="50" /> Servers</h3>
 <hr />
 
-@foreach (var city in cities)
-{
-    <button class="btn btn-info m-1 @(selectedCity.Equals(city) ? "btn-light" : "")" @onclick="@(() => { SelectCity(city); })">@city</button>
-}
-<h4>@selectedCity</h4>
+<CityListWidget @ref="cityListWidget"  SelectCityCallback="HandleCitySelection" />
 
 <hr />
 
-<ServerWidget />
-
-@* Request goes to the server and comes back. But the page doesnot reloads *@
-@* uses SignalR channel *@
-@* Best Options for Server Interactivity *@
-<ServerInteractionWidget @rendermode="InteractiveServer" />
+<SearchServerWidget @ref="searchServerWidget" SearchServerCallback="HandleSearchFilter" myattribute="my-data"/>
 
 <hr />
 
-@* One Way Binding *@
-<div>
-    <input type="text" placeholder="Search Server" @onchange="HandleServerSearchFilterChange" />
-    <button type="button" @onclick="HandleSearch">Search</button>
-</div>
-
-@* Two Way Data Binding (default onChangeEvent) *@
-<div>
-    <input type="text" placeholder="Search Server" @bind-value="searchFilter" />
-    <button type="button" @onclick="HandleSearch">Search</button>
-</div>
-
-@* Two Way Data Binding (onInputEvent) without HandleSearch and with Getter and Setter *@
-<div>
-    <input type="text" placeholder="Search Server" @bind-value="searchFilter" @bind-value:event="oninput" />
-    <button type="button">Search</button>
-</div>
-
-<hr />
-@* 
-    Virtualization is used to improve the performance of Lists.
-    When to use virtualization:
-    1. Too many items are there to render.
-    2. Items height should be same (pixel wise).
-
-    when we scroll, automatically data loaded.
-*@
-
-<ul>
-    
-    <Virtualize Items="this.servers" Context="server">
-        <li @key="server.ServerId">
-            @server.Name in @server.City is
-            <span style="color:@((server.IsOnline ? "green" : "red"))">
-                @(server.IsOnline ? "online" : "offline")
-            </span>
-            <a href="/servers/@server.ServerId" class="text-decoration-none">Edit</a>
-
-            <EditForm Model="server" FormName="@($"formServer-{server.ServerId}")" OnValidSubmit="@(() => { OnDeleteServer(server.ServerId); })">
-                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-            </EditForm>
-        </li>
-    </Virtualize>
-
-    @* @foreach (var server in servers)
-    {
-        <li @key="server.ServerId">
-            @server.Name in @server.City is
-            <span style="color:@((server.IsOnline ? "green" : "red"))">
-                @(server.IsOnline ? "online" : "offline")
-            </span>
-            <a href="/servers/@server.ServerId" class="text-decoration-none">Edit</a>
-
-            <EditForm Model="server" FormName="@($"formServer-{server.ServerId}")" OnValidSubmit="@(() => { OnDeleteServer(server.ServerId); })">
-                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-            </EditForm>
-        </li>
-    } *@
-</ul>
+ @* Passses the data to all the child *@
+<CascadingValue Name="SelectedCity" Value="@selectedCity">
+    <ServerListWidget @rendermode="InteractiveServer" CityName="@selectedCity" SearchFilter="@searchFilter"/>
+</CascadingValue>
 
 <a href="/servers/add" class="btn btn-outline-info">Add Server</a>
 
 @code {
-    // States
-    // After rendering, it doesnot re-render like it happens on Static SSR.
-    // It remembers it states.
-    // Initialization happen onces.
-    private List<Server> servers = ServerRepo.GetServersByCity("raipur");
-    private List<string> cities = CityRepo.GetCities();
     private string selectedCity = "Raipur";
-    private string _searchFilter = "";
-    private string searchFilter
-    {
-        get => _searchFilter; 
-        set
-            {
-                _searchFilter = value;
-                this.servers = ServerRepo.SearchServers(_searchFilter);
-            }
-    }
-
-    private void OnDeleteServer(int serverId)
-    {
-        if (serverId > 0)
-        {
-            ServerRepo.DeleteServer(serverId);
-            NavManager.Refresh();
-        }
-    }
-
-    private void SelectCity(string city)
-    {
-        this.searchFilter = string.Empty;
-        this.selectedCity = city;
-        this.servers = ServerRepo.GetServersByCity(this.selectedCity);
-    }
+    private string searchFilter = "";
+    private CityListWidget? cityListWidget;
+    private SearchServerWidget? searchServerWidget;
 
     private void HandleServerSearchFilterChange(ChangeEventArgs args)
     {
-        this.searchFilter = args.Value?.ToString() ?? string.Empty;
+        // this.searchFilter = args.Value?.ToString() ?? string.Empty;
     }
 
-    private void HandleSearch()
+    private void HandleSearchFilter(string searchFilter)
     {
-        this.servers = ServerRepo.SearchServers(this.searchFilter);
-        this.selectedCity = string.Empty;
+        this.searchFilter = searchFilter;
+        cityListWidget?.ClearSelection();
+
     }
+
+    private void HandleCitySelection(string cityName)
+    {
+        this.searchFilter = string.Empty;
+        searchServerWidget?.ClearFilter();
+        selectedCity = cityName;
+    }
+
 }

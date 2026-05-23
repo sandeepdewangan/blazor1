@@ -1,0 +1,18 @@
+﻿<div>
+    @Label
+
+    @Control
+
+    @ValidationControl
+</div>
+
+@code {
+    [Parameter]
+    public string? Label { get; set; }
+
+    [Parameter]
+    public RenderFragment? Control { get; set; }
+
+    [Parameter]
+    public RenderFragment? ValidationControl { get; set; }
+}

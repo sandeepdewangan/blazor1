@@ -1,43 +1,40 @@
-﻿@* Without Enhance=true *@
-@* Whenever user clicks on change server status, the page get reloaded and updated status shows. *@
-@* The whole page reloaded *@
+﻿@using ServerManagement.Components.Pages
+@inject NavigationManager NavManager
 
-@* With Enhance=true *@
-@* The page gets never loaded and only those DOM are replaced which are modified. *@
-
-<h4>Server Forms Enhancement</h4>
-
-@if(server != null)
+@if (Server != null)
 {
-    <EditForm Enhance="true" Model="server" FormName="serverComp" OnSubmit="ChangeServerStatus">
-        <InputNumber @bind-Value="server.ServerId" hidden />
-        <InputText @bind-Value="server.Name" hidden />
-        <InputText @bind-Value="server.City" hidden />
-        <InputCheckbox @bind-Value="server.IsOnline" hidden />
+    @* Use the cascaded value *@
+    <p>@SelectedCity</p>
 
-        <div style="color:@(server.IsOnline ? "green" : "red")">
-            @server.Name is in @server.City is @(server.IsOnline ? "Online" : "Offline")
-            <button class="btn btn-primary">Turn on/off</button>
-        </div>
-    </EditForm>
+    <li @key="Server.ServerId">
+        @Server.Name in @Server.City is
+        <span style="color:@((Server.IsOnline ? "green" : "red"))">
+            @(Server.IsOnline ? "online" : "offline")
+        </span>
+        <a href="/Servers/@Server.ServerId" class="text-decoration-none">Edit</a>
+        <EditForm Model="Server" FormName="@($"formServer-{Server.ServerId}")" OnValidSubmit="@(() => { OnDeleteServer(Server.ServerId); })">
+            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+        </EditForm>
+    </li>
 }
 
 
 
 @code {
-    [SupplyParameterFromForm]
-    private Server? server { get; set; }
+    [Parameter]
+    public Server? Server { get; set; }
 
-    protected override void OnParametersSet()
-    {
-        server = server ?? new Server { Name = "NIC Raipur", City = "Raipur" };
-    }
+    // Get the cascaded value
+    [CascadingParameter(Name = "SelectedCity")]
+    public string? SelectedCity { get; set; }
 
-    private void ChangeServerStatus()
+    private void OnDeleteServer(int serverId)
     {
-        if (server != null)
+        if (serverId > 0)
         {
-            server.IsOnline = !server.IsOnline;
+            ServerRepo.DeleteServer(serverId);
+            NavManager.Refresh(true);
         }
     }
+
 }

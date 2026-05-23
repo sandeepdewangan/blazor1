@@ -1,0 +1,24 @@
+﻿@foreach (var city in cities)
+{
+    <CityWidget city="@city" selectedCity="@selectedCity" SelectCityCallback="HandleCitySelection" />
+}
+
+@code {
+    private List<string> cities = CityRepo.GetCities();
+    private string selectedCity = "Raipur";
+
+    [Parameter]
+    public EventCallback<string> SelectCityCallback { get; set; }
+
+    public void ClearSelection()
+    {
+        this.selectedCity = string.Empty;
+        StateHasChanged();
+    }
+
+    private void HandleCitySelection(string cityName)
+    {
+        this.selectedCity = cityName;
+        SelectCityCallback.InvokeAsync(cityName);
+    }
+}

@@ -1,8 +1,9 @@
 ﻿@page "/servers/{id:int}"
+@using ServerManagement.Components.Widgets.Generic
 
 @inject NavigationManager NavManager
 
-<h3>Edit Server - @Id</h3>
+<h3>Edit Server</h3>
 
 @if(server != null)
 {
@@ -19,8 +20,19 @@
         <InputText @bind-Value="server.Name"></InputText> 
         <ValidationMessage For="()=>server.Name" />
 
-        <InputText @bind-Value="server.City"></InputText>
-        <ValidationMessage For="() => server.City" />
+        @* <InputText @bind-Value="server.City"></InputText>
+        <ValidationMessage For="() => server.City" /> *@
+
+        @* templated components to create generic components *@
+        <FieldWidget Label="Name">
+            <Control>
+                <InputText @bind-Value="server.City"></InputText>
+            </Control>
+            <ValidationControl>
+                <ValidationMessage For="() => server.City" />
+            </ValidationControl>
+        </FieldWidget>
+
 
         <InputCheckbox @bind-Value="server.IsOnline"></InputCheckbox>
 

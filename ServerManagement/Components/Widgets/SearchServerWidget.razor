@@ -1,0 +1,26 @@
+﻿<div class="myborder" @attributes="OtherAttributes">
+    <input type="text" placeholder="Search Server" @bind-value="searchFilter" @bind-value:event="oninput" />
+    <button type="button" @onclick="HandleSearch">Search</button>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<string> SearchServerCallback { get; set; }
+
+    // Handling unmatched values from parent
+    [Parameter(CaptureUnmatchedValues =true)]
+    public Dictionary<string, object>? OtherAttributes { get; set; }
+
+    private string searchFilter = "";
+
+    public void ClearFilter()
+    {
+        this.searchFilter = string.Empty;
+        StateHasChanged();
+    }
+
+    private void HandleSearch()
+    {
+        SearchServerCallback.InvokeAsync(searchFilter);
+    }
+}

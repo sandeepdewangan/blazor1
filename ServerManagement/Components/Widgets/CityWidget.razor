@@ -1,0 +1,18 @@
+﻿<button class="btn btn-info m-1 @(selectedCity.Equals(city) ? "btn-light" : "")" @onclick="@(() => { SelectCity(city); })">@city</button>
+
+@code {
+    [Parameter]
+    public string selectedCity { get; set; } = "Raipur";
+
+    [Parameter]
+    public string city { get; set; } = "";
+
+    [Parameter]
+    public EventCallback<string> SelectCityCallback { get; set; }
+
+    private void SelectCity(string cityName)
+    {
+        SelectCityCallback.InvokeAsync(cityName);    
+    }
+
+}
