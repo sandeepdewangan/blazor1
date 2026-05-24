@@ -169,8 +169,8 @@ Features:
 11. QuickGrid to display our servers in the table with Pagination, Filter and Sort.
 
 12. Arbitrary attributes to provide flexibility.
-
-
+    
+    
 
 ## Component Lifecycle
 
@@ -277,3 +277,16 @@ Complex parameter type and ShouldRender
 ### Navigation Lock
 
 Used to prevent navigation
+
+## State Management
+
+**Use URL to maintain the state**
+
+```csharp
+// Page 1
+NavigationManager.NavigateTo($"/cityname?servername={servername}")
+// Page 2
+NavigationManager.NavigateTo($"/cityname?servername={serverName}&cityname={cityName}")
+```
+
+
