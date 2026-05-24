@@ -2,45 +2,47 @@
 @using ServerManagement.Components.Widgets.Generic
 
 @inject NavigationManager NavManager
+@inject IJSRuntime JSRuntime
+<NavigationLock OnBeforeInternalNavigation="OnBeforeInternalNavigation" ConfirmExternalNavigation="true"/>
 
-<h3>Edit Server</h3>
+    <h3>Edit Server</h3>
 
-@if(server != null)
-{
-    <EditForm Model="server" FormName="formServer" OnValidSubmit="Submit">
-        
-        @* Allows to validate model based field validations *@
-        <DataAnnotationsValidator />
+    @if (server != null)
+    {
+        <EditForm Model="server" FormName="formServer" OnValidSubmit="Submit">
 
-        @* Disply validation summary *@
-        <ValidationSummary />
+            @* Allows to validate model based field validations *@
+            <DataAnnotationsValidator />
 
-        <InputNumber @bind-Value="server.ServerId"hidden></InputNumber>
-        
-        <InputText @bind-Value="server.Name"></InputText> 
-        <ValidationMessage For="()=>server.Name" />
+            @* Disply validation summary *@
+            <ValidationSummary />
 
-        @* <InputText @bind-Value="server.City"></InputText>
+            <InputNumber @bind-Value="server.ServerId" hidden></InputNumber>
+
+            <InputText @bind-Value="server.Name"></InputText>
+            <ValidationMessage For="() => server.Name" />
+
+            @* <InputText @bind-Value="server.City"></InputText>
         <ValidationMessage For="() => server.City" /> *@
 
-        @* templated components to create generic components *@
-        <FieldWidget Label="Name">
-            <Control>
-                <InputText @bind-Value="server.City"></InputText>
-            </Control>
-            <ValidationControl>
-                <ValidationMessage For="() => server.City" />
-            </ValidationControl>
-        </FieldWidget>
+            @* templated components to create generic components *@
+            <FieldWidget Label="Name">
+                <Control>
+                    <InputText @bind-Value="server.City"></InputText>
+                </Control>
+                <ValidationControl>
+                    <ValidationMessage For="() => server.City" />
+                </ValidationControl>
+            </FieldWidget>
 
 
-        <InputCheckbox @bind-Value="server.IsOnline"></InputCheckbox>
+            <InputCheckbox @bind-Value="server.IsOnline"></InputCheckbox>
 
-        <button class="btn btn-primary m-1" type="submit">Update</button>
+            <button class="btn btn-primary m-1" type="submit">Update</button>
 
-        <a href="/servers" class="text-decoration-none">Close</a>
-    </EditForm>
-}
+            <a href="/servers" class="text-decoration-none">Close</a>
+        </EditForm>
+    }
 
 @code {
 
@@ -60,12 +62,23 @@
     private void Submit()
     {
         // update server
-        if(server != null)
+        if (server != null)
         {
             ServerRepo.UpdateServer(server.ServerId, server);
         }
 
         NavManager.NavigateTo("/servers");
+    }
+
+    // This function will trigger only if Routing is Interactive.
+    private async Task OnBeforeInternalNavigation(LocationChangingContext context)
+    {
+        var isConfirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to leave this page");
+        if (!isConfirmed)
+        {
+            context.PreventNavigation();
+        }
+
     }
 
 }
