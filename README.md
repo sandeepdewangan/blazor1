@@ -169,3 +169,111 @@ Features:
 11. QuickGrid to display our servers in the table with Pagination, Filter and Sort.
 
 12. Arbitrary attributes to provide flexibility.
+
+
+
+## Component Lifecycle
+
+Lifecycle
+
+```mermaid
+graph TB;
+A[Construct] --Initialization, SetParameterAsync--> B[Initialize]
+B --OnInitialized--> C[Receive Parameter]
+C --OnParameterSet, ShouldRender--> D[Render]
+D --> C
+D --OnAfterRender, Dispose--> E[Destruct]
+```
+
+**Contruct**: During this, the component goes into the memory.
+
+**Static SSR -> Events**
+
+```mermaid
+graph LR;
+A[SetParameterAsync] --> B[OnInitialize] --> C[OnParameterSet] --> D[Dispose] 
+```
+
+**Interactive Server -> Events**
+
+```
+SetParameterAsync --> OnInitialize --> OnParameterSet --> 
+Dispose --> *SetParameterAsync --> OnInitialize --> 
+OnParameterSet --> ShouldRender (initially not present) 
+--> OnAfterRender
+```
+
+During the first request to the server, server responses and call first set of Event hooks. The second set is called when SignalR connection is established. On every set, reinitialization is done which is not shown above. If any parameter changed, from OnParameterSet all are called. The two calles bez if pre-rendering in on.
+
+**When there is one parent and one child component**
+
+First set called for both parent and child components and again after establishing SignalR channel second set called for both. Note that parent components all event hooks are called first. 
+
+## Problems with Events
+
+**The problem of component initialization**
+
+`OnInitialize` and Initialization variables calls twice. Due to this our variable initialized twice.
+`private List<City> cities = CityRepo.GetAllCities();`
+This will be called twice. This is the problem.
+
+**Solution**
+
+Note: To initialize anything which takes a good amount of resource we need to do it like this. 
+
+```csharp
+private List<City>? cities;
+OnInitialized(){
+    // Only true if SignalR connection is established.
+    if(RenderInfo.IsInteractive){
+        cities = CityRepo.GetAllCities();
+    }
+}
+```
+
+**The problem with OnParameterSet**
+
+OnParameterSet is called whenever there is a change in any one of the parameters.
+Ex.
+
+```c#
+[Parameter]
+CityName
+[Parameter]
+SearchFilter
+
+OnParameterSet(){
+    if(SearchFilter is empty)
+        servers = ServerRepo.GetServerData()
+    else
+        servers = ServerRepo.SearchServer()
+}
+```
+
+When we change the SearchFilter, the OnParameterSet is called and perform heavy lifting from database.
+
+**Solution**
+
+Use `SetParameterAsync` to check weather the parameter has changed or not.
+
+**When does a component render**
+
+1. When component created.
+2. When events are triggered. (Clicking on button, dropdown, input box). --> based on state variable, if changed. That components are changed are re-rendered.
+3. When parameter changed.
+4. When StateHasChanged called.
+
+**The problem of ShouldRender** 
+
+Complex parameter type and ShouldRender
+
+## Routing
+
+### Static vs Interactive Routing
+
+* Static Routing: Every time user request for a page to the server, server sends a page. Whereas in Interactive Routing, only first time request goes to the server via req protocol, rest page request routed by SignalR channel.
+* In WASM, there is no req and res by the server, as the js is already downloaded to the client.
+
+### Navigation Lock
+
+Used to prevent navigation
