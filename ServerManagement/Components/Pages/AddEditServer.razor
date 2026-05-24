@@ -1,0 +1,87 @@
+﻿@page "/server/{id:int?}"
+@inject NavigationManager NavManager
+@if (Id.HasValue)
+{
+    // Edit
+    <h3>Edit Server</h3>
+}
+else
+{
+    <h3>Add Server</h3>
+}
+
+
+@if (server != null)
+{
+    <EditForm Model="server" FormName="formServer" OnValidSubmit="Submit">
+
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        @if (server.ServerId > 0)
+        {
+
+            <InputNumber @bind-Value="server.ServerId" hidden></InputNumber>
+        }
+
+        <InputText @bind-Value="server.Name"></InputText>
+        <ValidationMessage For="() => server.Name" />
+
+        <FieldWidget Label="Name">
+            <Control>
+                <InputText @bind-Value="server.City"></InputText>
+            </Control>
+            <ValidationControl>
+                <ValidationMessage For="() => server.City" />
+            </ValidationControl>
+        </FieldWidget>
+
+
+        <InputCheckbox @bind-Value="server.IsOnline"></InputCheckbox>
+
+        @if (server.ServerId > 0)
+        {
+            <button class="btn btn-primary m-1" type="submit">Update</button>
+        }
+        else
+        {
+            <button class="btn btn-primary m-1" type="submit">Save</button>
+        }
+
+        <a href="/servers" class="text-decoration-none">Close</a>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public int? Id { get; set; }
+
+    [SupplyParameterFromForm(FormName = "formServer")]
+    private Server? server { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (this.Id.HasValue)
+            server = server ?? ServerRepo.GetServerById(this.Id.Value);
+        else
+            server = server ?? new Server() { IsOnline = false };
+    }
+
+    private void Submit()
+    {
+
+        if (server != null)
+        {
+            if (this.Id.HasValue)
+            {
+                ServerRepo.UpdateServer(server.ServerId, server);
+            }
+            else
+            {
+                ServerRepo.AddServer(server);
+            }
+        }
+
+        NavManager.NavigateTo("/servers");
+    }
+}

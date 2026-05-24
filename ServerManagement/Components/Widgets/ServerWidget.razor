@@ -11,7 +11,7 @@
         <span style="color:@((Server.IsOnline ? "green" : "red"))">
             @(Server.IsOnline ? "online" : "offline")
         </span>
-        <a href="/Servers/@Server.ServerId" class="text-decoration-none">Edit</a>
+        <a href="/server/@Server.ServerId" class="text-decoration-none">Edit</a>
         <EditForm Model="Server" FormName="@($"formServer-{Server.ServerId}")" OnValidSubmit="@(() => { OnDeleteServer(Server.ServerId); })">
             <button type="submit" class="btn btn-sm btn-danger">Delete</button>
         </EditForm>
