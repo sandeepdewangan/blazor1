@@ -59,12 +59,20 @@ else
     [SupplyParameterFromForm(FormName = "formServer")]
     private Server? server { get; set; }
 
+    [SupplyParameterFromQuery]
+    public string? City { get; set; }
+
     protected override void OnParametersSet()
     {
         if (this.Id.HasValue)
             server = server ?? ServerRepo.GetServerById(this.Id.Value);
         else
             server = server ?? new Server() { IsOnline = false };
+
+        if (server != null && !string.IsNullOrEmpty(this.City))
+        {
+            server.City = this.City;
+        }
     }
 
     private void Submit()
