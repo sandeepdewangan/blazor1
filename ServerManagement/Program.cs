@@ -1,9 +1,13 @@
+using ServerManagement;
 using ServerManagement.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
+
+// Inject the SessionStorage
+builder.Services.AddTransient<SessionStorage>();
 
 var app = builder.Build();
 

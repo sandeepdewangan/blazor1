@@ -289,4 +289,62 @@ NavigationManager.NavigateTo($"/cityname?servername={servername}")
 NavigationManager.NavigateTo($"/cityname?servername={serverName}&cityname={cityName}")
 ```
 
+**Use browser storage to maintain the state**
 
+| Feature                      | Session Storage              | Local Storage                | Cookies                         |
+| ---------------------------- | ---------------------------- | ---------------------------- | ------------------------------- |
+| Storage Limit                | ~5 MB                        | ~5–10 MB                     | ~4 KB                           |
+| Expiry                       | Ends when tab/browser closes | Stays until manually cleared | Can have expiry date            |
+| Shared Across Tabs           | No                           | Yes (same origin)            | Yes                             |
+| Sent to Server Automatically | No                           | No                           | Yes                             |
+| Accessible via JavaScript    | Yes                          | Yes                          | Yes (unless HttpOnly)           |
+| Best Use Case                | Temporary tab data           | Persistent client data       | Authentication/session tracking |
+
+`SessionStorage.cs`
+
+```csharp
+public class SessionStorage
+{
+    private readonly ProtectedSessionStorage protectedSessionStorage;
+
+    public SessionStorage(ProtectedSessionStorage protectedSessionStorage)
+    {
+        this.protectedSessionStorage = protectedSessionStorage;
+    }
+
+    public async Task<Server?> GetServerAsync()
+    {
+        var res = await this.protectedSessionStorage.GetAsync<Server>("server");
+        if (res.Success)
+
+            return res.Value;
+        else
+            return null;
+    }
+
+    public async Task SetServerAsync(Server? server)
+    {
+        await this.protectedSessionStorage.SetAsync("server", server);
+    }
+}
+```
+
+`Program.cs`
+
+Inject the SessionStorage
+
+```csharp
+builder.Services.AddTransient<SessionStorage>();
+```
+
+Use in the Components
+
+```csharp
+@inject SessionStorage sessionStorage
+
+await sessionStorage.SetServerAsync(server)
+
+if(RendererInfo.IsInteractive){
+    this.server = await this.sessionStorage.GetServerAsync();
+}
+```
