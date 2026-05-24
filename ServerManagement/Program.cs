@@ -14,6 +14,9 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+// Middlware through when something not found by the server, Static Routing
+// This will not called NotFound page returned by the router. 
+// Comment it out, to display Not Found Page, as defined by us in NotFound.razor page.
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
 
