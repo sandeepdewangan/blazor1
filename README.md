@@ -349,6 +349,46 @@ if(RendererInfo.IsInteractive){
 }
 ```
 
+**Use DI box to maintain the state**
 
+In Static SSR, DI box reside in Server and in WASM DI box resides in client side.
+
+`ContainerStorage.cs`
+
+```csharp
+
+public class ContainerStorage
+{
+    private Server _server = new Server();
+    public Server GetServer() { return _server; }
+    public void SetServer(Server server) { _server = server; }
+}
+```
+
+Inject the ContainerStorage
+
+```csharp
+builder.Services.AddScoped<ContainerStorage>();
+```
+
+Use in the Components
+
+```csharp
+@inject ContainerStorage containerStorage
+
+await containerStorage.SetServer(server)
+
+if(RendererInfo.IsInteractive){
+    this.server = this.containerStorage.GetServer();
+}
+```
+
+**Transient**: A new instance is created every time the service is requested.
+
+**Scoped**: One instance per user circuit/connection.
+
+**Singleton**: Only one instance for entire application lifetime.
+
+## Observer: To access states across component trees
 
 
