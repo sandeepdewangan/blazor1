@@ -2,6 +2,7 @@
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavManager
 @rendermode InteractiveWebAssembly
+@inject ContainerStorage ContainerStorage
 
 <h2>Browser Storage Step 01</h2>
 <hr/>
@@ -17,7 +18,8 @@
 
     private async Task GoNext()
     {
-        await JSRuntime.InvokeVoidAsync("sessionStorage.setItem", "data-s1", data);
+        // await JSRuntime.InvokeVoidAsync("sessionStorage.setItem", "data-s1", data);
+        ContainerStorage.SetMessage(data);
         NavManager.NavigateTo("/step2");
     }
 }

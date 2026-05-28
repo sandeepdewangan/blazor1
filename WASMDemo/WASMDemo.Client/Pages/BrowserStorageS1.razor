@@ -2,6 +2,7 @@
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavManager
 @rendermode InteractiveWebAssembly
+@inject ContainerStorage ContainerStorage
 
 <h2>Browser Storage Step 02</h2>
 <hr/>
@@ -28,7 +29,8 @@ Data from step 01: @dataS1
     {
         if (firstRender)
         {
-            dataS1 = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "data-s1");
+            // dataS1 = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "data-s1");
+            dataS1 = ContainerStorage.GetMessage();
             StateHasChanged();
 
         }

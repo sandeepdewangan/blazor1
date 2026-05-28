@@ -406,4 +406,6 @@ graph LR;
 A[SetParameterAsync] --> B[OnInitialize] --> C[OnParameterSet] --> D[OnAfterRender] --Event--> E[ShouldRender] --> D
 ```
 
+<mark>In WASM, if pre-rendering turned on, it rendered in server side first than in Browser side.</mark>
+
 
