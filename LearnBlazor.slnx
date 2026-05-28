@@ -1,5 +1,7 @@
 <Solution>
   <Project Path="ServerManagement/ServerManagement.csproj" />
+  <Project Path="ServerManagementWASM/ServerManagementWASM.Client/ServerManagementWASM.Client.csproj" Id="293eb25b-af3a-4901-92e9-3cbc878dc058" />
+  <Project Path="ServerManagementWASM/ServerManagementWASM/ServerManagementWASM.csproj" Id="de17fbd1-3103-4792-9b6a-022898230667" />
   <Project Path="TodoApp/TodoApp.csproj" Id="7064dedc-5f4d-411a-8cec-9d08d79585fd" />
   <Project Path="WASMDemo/WASMDemo.Client/WASMDemo.Client.csproj" Id="20270a6b-4314-4d80-9315-55368dd77b12" />
   <Project Path="WASMDemo/WASMDemo/WASMDemo.csproj" Id="0b105be6-c2f5-400c-b160-a2a8636a60d3" />
