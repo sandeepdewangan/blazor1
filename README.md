@@ -394,3 +394,16 @@ if(RendererInfo.IsInteractive){
 Observer keeps the data centralized and broadcast it to those who subscribe it.
 
 It is a container based state store which implements oberver.
+
+
+
+## Web Assembly (WASM)
+
+### Life Cycle
+
+```mermaid
+graph LR;
+A[SetParameterAsync] --> B[OnInitialize] --> C[OnParameterSet] --> D[OnAfterRender] --Event--> E[ShouldRender] --> D
+```
+
+
