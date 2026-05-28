@@ -1,0 +1,36 @@
+﻿@page "/step2"
+@inject IJSRuntime JSRuntime
+@inject NavigationManager NavManager
+@rendermode InteractiveWebAssembly
+
+<h2>Browser Storage Step 02</h2>
+<hr/>
+
+Data from step 01: @dataS1
+
+
+@code {
+    private string dataS1 = "";
+
+    // Shows Error---------Reason
+    // 1. Calling JS in OnInitialized
+    // 2. Calling JS in constructor
+    // 3. Calling JS before first render
+    // 4. Using Interactive Server render mode with prerender enabled
+
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     await base.OnInitializedAsync();
+    //     dataS1 = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "data-s1");
+    // }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            dataS1 = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "data-s1");
+            StateHasChanged();
+
+        }
+    }
+}

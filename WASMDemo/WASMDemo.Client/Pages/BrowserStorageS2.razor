@@ -1,0 +1,23 @@
+﻿@page "/step1"
+@inject IJSRuntime JSRuntime
+@inject NavigationManager NavManager
+@rendermode InteractiveWebAssembly
+
+<h2>Browser Storage Step 01</h2>
+<hr/>
+
+<input type="text" class="form-control" @bind-value="data"/>
+<br />
+<br />
+<button type="button" class="btn btn-primary" @onclick="GoNext">Next</button>
+
+
+@code {
+    private string data = "";
+
+    private async Task GoNext()
+    {
+        await JSRuntime.InvokeVoidAsync("sessionStorage.setItem", "data-s1", data);
+        NavManager.NavigateTo("/step2");
+    }
+}
