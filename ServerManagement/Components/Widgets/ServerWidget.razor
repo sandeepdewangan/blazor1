@@ -1,5 +1,5 @@
-﻿@using ServerManagement.Components.Pages
-@inject NavigationManager NavManager
+﻿@inject NavigationManager NavManager
+@inject RaipurOnlineServerStore RaipurOnlineServerStore
 
 @if (Server != null)
 {
@@ -7,6 +7,15 @@
     <p>@SelectedCity</p>
 
     <li @key="Server.ServerId">
+        @if (Server.IsOnline)
+        {
+            <button type="button" class="btn btn-outline-danger" @onclick="@(()=>{SetServerStatus(false);})">Turn Off</button>
+        }
+        else
+        {
+            <button type="button" class="btn btn-outline-success" @onclick="@(() => { SetServerStatus(true);})">Turn On</button>
+        }
+
         @Server.Name in @Server.City is
         <span style="color:@((Server.IsOnline ? "green" : "red"))">
             @(Server.IsOnline ? "online" : "offline")
@@ -37,4 +46,20 @@
         }
     }
 
+    private void SetServerStatus(bool status)
+    {
+        if(this.Server is not null)
+        {
+            if(this.Server.IsOnline != status)
+            {
+                if(this.Server.City.Equals("Raipur", StringComparison.OrdinalIgnoreCase))
+                {
+                    var num = RaipurOnlineServerStore.GetNumberOfServerOnline();
+                    if (status) RaipurOnlineServerStore.SetNumberOfServerOnline(num + 1);
+                    else RaipurOnlineServerStore.SetNumberOfServerOnline(num - 1);
+                }
+                this.Server.IsOnline = status;
+            }
+        }
+    }
 }

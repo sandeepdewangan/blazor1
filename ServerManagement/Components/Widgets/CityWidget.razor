@@ -1,4 +1,11 @@
-﻿<button class="btn btn-info m-1 @(selectedCity.Equals(city) ? "btn-light" : "")" @onclick="@(() => { SelectCity(city); })">@city</button>
+﻿@inject RaipurOnlineServerStore RaipurOnlineServerStore
+@implements IDisposable
+
+<button class="btn btn-info m-1 @(selectedCity.Equals(city) ? "btn-light" : "")" @onclick="@(() => { SelectCity(city); })">@city</button>
+@if(city == "Raipur")
+{
+    <text>@onlineServerCount</text>
+}
 
 @code {
     [Parameter]
@@ -10,9 +17,33 @@
     [Parameter]
     public EventCallback<string> SelectCityCallback { get; set; }
 
+    private int onlineServerCount;
+
     private void SelectCity(string cityName)
     {
         SelectCityCallback.InvokeAsync(cityName);    
+    }
+
+    // Register a listener for onlineServerCount variable.
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        if (RendererInfo.IsInteractive)
+        {
+            onlineServerCount = RaipurOnlineServerStore.GetNumberOfServerOnline();
+            RaipurOnlineServerStore.AddStateChangeListener(OnRaipurOnlineServerChanged);
+        }
+    }
+
+    protected void OnRaipurOnlineServerChanged()
+    {
+        onlineServerCount = RaipurOnlineServerStore.GetNumberOfServerOnline();
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        RaipurOnlineServerStore.RemoveStateChangeListener(OnRaipurOnlineServerChanged);
     }
 
 }

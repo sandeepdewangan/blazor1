@@ -1,5 +1,6 @@
 using ServerManagement;
 using ServerManagement.Components;
+using ServerManagement.ObserverState;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,7 @@ builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 // Inject the SessionStorage
 builder.Services.AddTransient<SessionStorage>();
 builder.Services.AddScoped<ContainerStorage>();
+builder.Services.AddScoped<RaipurOnlineServerStore>();
 
 var app = builder.Build();
 

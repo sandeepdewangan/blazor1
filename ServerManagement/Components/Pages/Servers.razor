@@ -1,6 +1,8 @@
 ﻿@page "/servers"
 @rendermode InteractiveServer
 @inject NavigationManager NavManager
+@inject RaipurOnlineServerStore RaipurOnlineServerStore
+
 
 
 <h3><img src="@($"/images/server.png")" height="50" /> Servers</h3>
@@ -27,6 +29,17 @@
     private CityListWidget? cityListWidget;
     private SearchServerWidget? searchServerWidget;
 
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        // Check we are initializing only one time
+        if (RendererInfo.IsInteractive)
+        {
+            var serverRaipur = ServerRepo.GetServersByCity("Raipur");
+            RaipurOnlineServerStore.SetNumberOfServerOnline(serverRaipur.Count(x=>x.IsOnline));
+        }
+    }
+
     private void HandleServerSearchFilterChange(ChangeEventArgs args)
     {
         // this.searchFilter = args.Value?.ToString() ?? string.Empty;
@@ -44,6 +57,6 @@
         this.searchFilter = string.Empty;
         searchServerWidget?.ClearFilter();
         selectedCity = cityName;
-    }
+    }  
 
 }

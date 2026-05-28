@@ -391,4 +391,6 @@ if(RendererInfo.IsInteractive){
 
 ## Observer: To access states across component trees
 
+Observer keeps the data centralized and broadcast it to those who subscribe it.
 
+It is a container based state store which implements oberver.
