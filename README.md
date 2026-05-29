@@ -409,3 +409,23 @@ A[SetParameterAsync] --> B[OnInitialize] --> C[OnParameterSet] --> D[OnAfterRend
 <mark>In WASM, if pre-rendering turned on, it rendered in server side first than in Browser side.</mark>
 
 
+
+## Authentication and Authorization
+
+**Static Routing:** <mark>Inside HTTP Cookies in browser</mark>
+
+1. Blazor SSR: 
+
+2. Server Interactivity with per page / component interactive location:
+
+3. Web assembly with per page / component interactive location:
+
+**Server Interactive Routing** <mark>Within SignalR Channel</mark>
+
+1. Server Interactive with Global interactive location
+
+**Web Assembly Interactive Routing** <mark>Inside Browser and persisted in state</mark>
+
+1. Web Assembly Interactivity with Global interactive location
+
+
